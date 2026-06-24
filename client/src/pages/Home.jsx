@@ -179,8 +179,10 @@ const styles = {
     justifyContent: "space-between", marginBottom: "20px"
   },
   resultsGrid: {
-    display: "grid", gridTemplateColumns: "260px 1fr", gap: "20px"
-  },
+  display: "grid",
+  gridTemplateColumns: window.innerWidth < 700 ? "1fr" : "260px 1fr",
+  gap: "20px"
+},
   suspectCard: {
     background: "white", border: "1px solid #ddd",
     padding: "20px", borderRadius: "6px", height: "fit-content",

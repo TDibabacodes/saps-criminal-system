@@ -13,3 +13,24 @@ body {
 a {
   text-decoration: none;
 }
+
+/* Make tables scroll horizontally on small screens */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Stack forms on mobile */
+@media (max-width: 600px) {
+  div[style*="maxWidth: 1100px"] {
+    padding: 12px !important;
+  }
+
+  table {
+    font-size: 12px !important;
+  }
+
+  input, select {
+    font-size: 16px !important; /* prevents zoom on iOS */
+  }
+}

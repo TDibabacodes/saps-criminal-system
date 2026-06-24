@@ -154,9 +154,10 @@ const styles = {
     background: "#e8eaf6"
   },
   card: {
-    background: "white", padding: "40px", borderRadius: "8px",
-    width: "400px", boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
-  },
+  background: "white", padding: "40px", borderRadius: "8px",
+  width: "90%", maxWidth: "400px",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+},
   title: { textAlign: "center", color: "#1a237e", marginBottom: "4px" },
   sub: {
     textAlign: "center", color: "#666",
