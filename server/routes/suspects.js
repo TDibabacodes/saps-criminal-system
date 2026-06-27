@@ -127,4 +127,18 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// DELETE /api/suspects/:id
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    await pool.query(
+      "DELETE FROM suspects WHERE suspect_id = $1",
+      [req.params.id]
+    );
+    res.json({ message: "Suspect deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;

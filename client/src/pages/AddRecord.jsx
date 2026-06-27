@@ -7,14 +7,15 @@ export default function AddRecord() {
   const navigate      = useNavigate();
 
   const [offences, setOffences] = useState([]);
-  const [form, setForm]         = useState({
-    suspect_id: suspectId,
-    offence_id: "",
-    sentence:   "",
-    issued_at:  "",
-    issued_by:  "",
-    issue_date: "",
-  });
+  const [form, setForm] = useState({
+  suspect_id: suspectId,
+  offence_id: "",
+  sentence:   "",
+  issued_at:  "",
+  issued_by:  "",
+  issue_date: "",
+  status:     "Open",  // add this
+});
   const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -136,6 +137,23 @@ export default function AddRecord() {
               style={styles.input}
             />
           </Row>
+
+
+{/* Case Status */}
+<Row label="Case Status">
+  <select
+    name="status"
+    value={form.status}
+    onChange={handleChange}
+    style={styles.input}
+  >
+    <option value="Open">Open</option>
+    <option value="Pending">Pending</option>
+    <option value="Closed">Closed</option>
+  </select>
+</Row>
+
+
 
           {/* Buttons */}
           <div style={styles.footer}>

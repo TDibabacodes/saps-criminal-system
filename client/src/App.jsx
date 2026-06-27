@@ -10,6 +10,7 @@ import EditSuspect    from "./pages/EditSuspect";
 import EditRecord     from "./pages/EditRecord";
 import Dashboard      from "./pages/Dashboard";
 import ManagerCases   from "./pages/ManagerCases";
+import NotFound from "./pages/NotFound";
 
 export default function App() {
   return (
@@ -40,7 +41,7 @@ export default function App() {
           <Route path="/manager/:id" element={
             <ProtectedRoute><ManagerCases /></ProtectedRoute>
           }/>
-          <Route path="*" element={<Navigate to="/" />} />
+         <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </BrowserRouter>

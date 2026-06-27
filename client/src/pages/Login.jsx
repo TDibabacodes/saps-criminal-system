@@ -41,6 +41,13 @@ export default function Login() {
 
         {error && <div style={styles.error}>{error}</div>}
 
+        {/* Show message when session expires */}
+{new URLSearchParams(window.location.search).get("expired") && (
+  <div style={{ ...styles.error, background: "#fff3e0", color: "#e65100" }}>
+    ⏱ Your session expired. Please log in again.
+  </div>
+)}
+
         <form onSubmit={handleSubmit}>
           <label style={styles.label}>Username</label>
           <input
