@@ -46,7 +46,6 @@ export default function Home() {
     if (!window.confirm("Are you sure you want to delete this criminal record?")) return;
     try {
       await API.delete("/records/" + recordId);
-      // Refresh the results
       const res = await API.get("/suspects/search?id_number=" + query.trim());
       setResult(res.data);
     } catch (err) {
@@ -59,9 +58,14 @@ export default function Home() {
   }
 
   // Pagination for records
-  const totalRecordPages = result ? Math.ceil(result.records.length / PAGE_SIZE) : 1;
-  const pagedRecords     = result
-    ? result.records.slice((recordPage - 1) * PAGE_SIZE, recordPage * PAGE_SIZE)
+  const totalRecordPages = result
+    ? Math.ceil(result.records.length / PAGE_SIZE)
+    : 1;
+  const pagedRecords = result
+    ? result.records.slice(
+        (recordPage - 1) * PAGE_SIZE,
+        recordPage * PAGE_SIZE
+      )
     : [];
 
   function statusColor(status) {
@@ -93,8 +97,13 @@ export default function Home() {
       {/* ── Not Found ── */}
       {notFound && (
         <div style={styles.notFound}>
-          <span>No criminal record found for <strong>{query}</strong></span>
-          <button style={styles.newRecordBtn} onClick={() => navigate("/add-suspect")}>
+          <span>
+            No criminal record found for <strong>{query}</strong>
+          </span>
+          <button
+            style={styles.newRecordBtn}
+            onClick={() => navigate("/add-suspect")}
+          >
             + New Suspect
           </button>
         </div>
@@ -104,21 +113,29 @@ export default function Home() {
       {result && (
         <div style={styles.resultsGrid}>
 
-          {/* Left: suspect details */}
+          {/* ── Suspect Details ── */}
           <div style={styles.suspectCard}>
             <h3 style={styles.cardTitle}>Suspect Details</h3>
-            <InfoRow label="Suspect No" value={result.suspect.suspect_id} />
-            <InfoRow label="ID Number"  value={result.suspect.id_number} />
-            <InfoRow label="First Name" value={result.suspect.first_name} />
-            <InfoRow label="Last Name"  value={result.suspect.last_name} />
-            <InfoRow label="Added"      value={new Date(result.suspect.created_at).toLocaleDateString()} />
+
+            <div style={styles.infoGrid}>
+              <InfoRow label="Suspect No" value={result.suspect.suspect_id} />
+              <InfoRow label="ID Number"  value={result.suspect.id_number} />
+              <InfoRow label="First Name" value={result.suspect.first_name} />
+              <InfoRow label="Last Name"  value={result.suspect.last_name} />
+              <InfoRow
+                label="Added"
+                value={new Date(result.suspect.created_at).toLocaleDateString()}
+              />
+            </div>
 
             <div style={styles.actionRow}>
               <button
                 style={styles.editIconBtn}
-                title="Edit Suspect"
                 onClick={() => {
-                  localStorage.setItem("editSuspect", JSON.stringify(result.suspect));
+                  localStorage.setItem(
+                    "editSuspect",
+                    JSON.stringify(result.suspect)
+                  );
                   navigate("/edit-suspect/" + result.suspect.suspect_id);
                 }}
               >
@@ -126,34 +143,33 @@ export default function Home() {
               </button>
               <button
                 style={styles.deleteBtn}
-                title="Delete Suspect"
                 onClick={() => handleDeleteSuspect(result.suspect.suspect_id)}
               >
                 🗑️ Delete
               </button>
-              <button
-                style={styles.printBtn}
-                title="Print Record"
-                onClick={handlePrint}
-              >
+              <button style={styles.printBtn} onClick={handlePrint}>
                 🖨️ Print
               </button>
             </div>
           </div>
 
-          {/* Right: criminal records */}
+          {/* ── Criminal Records ── */}
           <div style={styles.recordsCard}>
             <div style={styles.recordsHeader}>
-              <h3 style={styles.cardTitle}>
+              <h3 style={{ ...styles.cardTitle, marginBottom: 0, borderBottom: "none" }}>
                 Criminal Records ({result.records.length})
               </h3>
               <button
                 style={styles.newRecordBtn}
-                onClick={() => navigate("/add-record/" + result.suspect.suspect_id)}
+                onClick={() =>
+                  navigate("/add-record/" + result.suspect.suspect_id)
+                }
               >
                 + New Record
               </button>
             </div>
+
+            <div style={{ borderBottom: "1px solid #eee", marginBottom: "16px" }} />
 
             {result.records.length === 0 ? (
               <p style={{ color: "#666", fontSize: "14px" }}>
@@ -161,12 +177,15 @@ export default function Home() {
               </p>
             ) : (
               <>
-                <div style={{ overflowX: "auto" }}>
+                {/* Scrollable table */}
+                <div style={styles.tableScroll}>
                   <table style={styles.table}>
                     <thead>
                       <tr>
-                        {["ID", "Offence", "Sentence", "Status", "Issued At",
-                          "Issued By", "Date", "Manager", "Actions"].map((h) => (
+                        {[
+                          "ID", "Offence", "Sentence", "Status",
+                          "Issued At", "Issued By", "Date", "Manager", "Actions"
+                        ].map((h) => (
                           <th key={h} style={styles.th}>{h}</th>
                         ))}
                       </tr>
@@ -178,13 +197,20 @@ export default function Home() {
                           <td style={styles.td}>{r.offence_name}</td>
                           <td style={styles.td}>{r.sentence} yrs</td>
                           <td style={styles.td}>
-                            <span style={{ ...styles.statusBadge, ...statusColor(r.status) }}>
+                            <span
+                              style={{
+                                ...styles.statusBadge,
+                                ...statusColor(r.status),
+                              }}
+                            >
                               {r.status || "Open"}
                             </span>
                           </td>
                           <td style={styles.td}>{r.issued_at}</td>
                           <td style={styles.td}>{r.issued_by}</td>
-                          <td style={styles.td}>{r.issue_date?.split("T")[0]}</td>
+                          <td style={styles.td}>
+                            {r.issue_date?.split("T")[0]}
+                          </td>
                           <td style={styles.td}>
                             {r.manager_first
                               ? `${r.manager_first} ${r.manager_last}`
@@ -195,7 +221,10 @@ export default function Home() {
                               <button
                                 style={styles.editIconBtn}
                                 onClick={() => {
-                                  localStorage.setItem("editRecord", JSON.stringify(r));
+                                  localStorage.setItem(
+                                    "editRecord",
+                                    JSON.stringify(r)
+                                  );
                                   navigate("/edit-record/" + r.record_id);
                                 }}
                               >
@@ -249,18 +278,25 @@ export default function Home() {
 function InfoRow({ label, value }) {
   return (
     <div style={{ display: "flex", gap: "12px", marginBottom: "10px" }}>
-      <span style={{ width: "100px", color: "#666", fontSize: "14px" }}>{label}</span>
-      <span style={{ fontWeight: "500", fontSize: "14px" }}>{value}</span>
+      <span style={{ width: "100px", color: "#666", fontSize: "14px", flexShrink: 0 }}>
+        {label}
+      </span>
+      <span style={{ fontWeight: "500", fontSize: "14px", wordBreak: "break-all" }}>
+        {value}
+      </span>
     </div>
   );
 }
 
 const styles = {
-  pageTitle:   { color: "#1a237e", marginBottom: "20px" },
-  searchRow:   { display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" },
+  pageTitle: { color: "#1a237e", marginBottom: "20px" },
+  searchRow: {
+    display: "flex", gap: "8px",
+    marginBottom: "20px", flexWrap: "wrap"
+  },
   searchInput: {
-    padding: "9px 14px", border: "1px solid #ccc",
-    borderRadius: "4px", width: "300px", fontSize: "14px"
+    padding: "9px 14px", border: "1px solid #ccc", borderRadius: "4px",
+    flex: 1, minWidth: "200px", fontSize: "14px"
   },
   searchBtn: {
     padding: "9px 24px", background: "#1565c0", color: "white",
@@ -270,16 +306,18 @@ const styles = {
     background: "#fff3e0", border: "1px solid #ffe0b2",
     padding: "14px 20px", borderRadius: "4px",
     display: "flex", alignItems: "center",
-    justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "10px"
+    justifyContent: "space-between",
+    marginBottom: "20px", flexWrap: "wrap", gap: "10px"
   },
+
+  // Stack vertically on all screens — clean on mobile and desktop
   resultsGrid: {
-    display: "grid",
-    gridTemplateColumns: window.innerWidth < 700 ? "1fr" : "260px 1fr",
-    gap: "20px"
+    display: "flex", flexDirection: "column", gap: "20px"
   },
+
   suspectCard: {
     background: "white", border: "1px solid #ddd",
-    padding: "20px", borderRadius: "6px", height: "fit-content",
+    padding: "20px", borderRadius: "6px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.06)"
   },
   recordsCard: {
@@ -287,21 +325,33 @@ const styles = {
     padding: "20px", borderRadius: "6px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.06)"
   },
+  infoGrid: { marginBottom: "8px" },
   recordsHeader: {
     display: "flex", justifyContent: "space-between",
-    alignItems: "center", marginBottom: "16px", flexWrap: "wrap", gap: "10px"
+    alignItems: "center", flexWrap: "wrap", gap: "10px",
+    marginBottom: "0"
   },
   cardTitle: {
-    margin: "0 0 16px", fontSize: "15px",
-    color: "#1a237e", borderBottom: "1px solid #eee", paddingBottom: "10px"
+    margin: "0 0 16px", fontSize: "15px", color: "#1a237e",
+    borderBottom: "1px solid #eee", paddingBottom: "10px"
   },
-  table:  { width: "100%", borderCollapse: "collapse", fontSize: "13px" },
+
+  // Key fix — horizontal scroll on the table only
+  tableScroll: {
+    overflowX: "auto",
+    WebkitOverflowScrolling: "touch",
+    marginBottom: "8px"
+  },
+  table: {
+    width: "100%", borderCollapse: "collapse",
+    fontSize: "13px", minWidth: "700px"
+  },
   th: {
     background: "#e8eaf6", padding: "9px 10px", textAlign: "left",
     borderBottom: "2px solid #c5cae9", whiteSpace: "nowrap"
   },
-  tr: { borderBottom: "1px solid #eee" },
-  td: { padding: "9px 10px", whiteSpace: "nowrap" },
+  tr:  { borderBottom: "1px solid #eee" },
+  td:  { padding: "9px 10px", whiteSpace: "nowrap" },
   actionRow: {
     display: "flex", gap: "8px", marginTop: "16px",
     paddingTop: "12px", borderTop: "1px solid #eee", flexWrap: "wrap"
