@@ -9,13 +9,13 @@ export default function EditRecord() {
   const [offences, setOffences] = useState([]);
   const [form, setForm]         = useState({
     offence_id: "", sentence: "",
-    issued_at: "", issued_by: "", issue_date: ""
+    issued_at: "", issued_by: "",
+    issue_date: "", status: "Open"
   });
   const [success, setSuccess]         = useState("");
   const [serverError, setServerError] = useState("");
   const [loading, setLoading]         = useState(true);
 
-  // Load offences dropdown and the existing record data
   useEffect(() => {
     // Load offences for the dropdown
     API.get("/records/offences").then((res) => setOffences(res.data));
@@ -30,6 +30,7 @@ export default function EditRecord() {
           issued_at:  rec.issued_at,
           issued_by:  rec.issued_by,
           issue_date: rec.issue_date?.split("T")[0] || "",
+          status:     rec.status || "Open",
         });
         setLoading(false);
       })
@@ -148,6 +149,21 @@ export default function EditRecord() {
             />
           </div>
 
+          {/* Case Status */}
+          <div style={styles.row}>
+            <label style={styles.label}>Case Status</label>
+            <select
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+              style={styles.input}
+            >
+              <option value="Open">Open</option>
+              <option value="Pending">Pending</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+
           {/* Buttons */}
           <div style={styles.btnRow}>
             <button type="submit" style={styles.saveBtn}>
@@ -172,7 +188,8 @@ const styles = {
   container: { display: "flex", justifyContent: "center", paddingTop: "30px" },
   card: {
     background: "white", border: "1px solid #ddd", borderRadius: "6px",
-    padding: "30px", width: "600px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
+    padding: "30px", width: "600px", maxWidth: "95%",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
   },
   title: {
     margin: "0 0 24px", fontSize: "18px", fontWeight: "600",
